@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const fs = require("fs");
+const { log } = require("console");
 
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -17,7 +18,15 @@ app.get("/", function (req, res) {
 app.post("/createtask", function(req, res){
         fs.writeFile(`./files/${req.body.title.split(" ").join("")}.txt`, req.body.details, function(err){
             res.redirect("/");
-        })
-})
+        });
+});
+
+app.get("/view/:filename",function(req, res){
+    const filename = req.params.filename;
+    const file = filename.split(".txt").join("");
+    fs.readFile(`./files/${filename}`, 'utf8', function(err, data){
+        res.render("viewfile",{data, file});
+    });
+});
 
 app.listen(3000);
